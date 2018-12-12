@@ -54,7 +54,7 @@
             <groupId>com.hellyard</groupId>
             <artifactId>Cuttlefish</artifactId>
             <version>0.0.1.5</version>
-            <type>compile</type>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
