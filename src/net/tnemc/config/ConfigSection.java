@@ -101,6 +101,10 @@ public class ConfigSection {
     return section;
   }
 
+  public void set(String node, String... values) {
+    getNode(node).set(values);
+  }
+
   /**
    * Returns the {@link YamlNode node} associated with the specified string node if it exists, otherwise
    * returns null.
