@@ -92,9 +92,10 @@ public class ConfigSection {
 
     for(String str : nodeSplit) {
       if(str.equalsIgnoreCase(nodeSplit[nodeSplit.length - 1])) {
+        if(section == null) return null;
         return section.children.get(str);
       } else {
-        if(section == null) break;
+        if(section == null) return null;
         section = section.children.get(str);
       }
     }

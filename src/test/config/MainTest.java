@@ -4,7 +4,6 @@ import net.tnemc.config.CommentedConfiguration;
 
 import java.io.File;
 import java.nio.file.Paths;
-import java.util.LinkedList;
 
 /**
  * Created by creatorfromhell.
@@ -18,8 +17,8 @@ import java.util.LinkedList;
 public class MainTest {
 
   public static void main(String[] args) {
-    final File defaults = Paths.get("C:\\Users\\Daniel\\Desktop\\Minecraft\\spigot2\\plugins\\TheNewEconomy\\config.yml").toFile();
-    final File file = Paths.get("C:\\Users\\Daniel\\Desktop\\Minecraft\\spigot2\\plugins\\TheNewEconomy\\newconfig.yml").toFile();
+    final File defaults = Paths.get("C:\\Users\\Daniel\\Desktop\\Minecraft\\spigot2\\plugins\\TheNewEconomy\\worlds.yml").toFile();
+    final File file = Paths.get("C:\\Users\\Daniel\\Desktop\\Minecraft\\spigot2\\plugins\\TheNewEconomy\\currencytest.yml").toFile();
 
     //We defined a new CommentedConfiguration instance with our file, and a file of our default configurations.
     CommentedConfiguration config = new CommentedConfiguration(file, defaults);
@@ -28,27 +27,7 @@ public class MainTest {
     config.load();
 
     //Simple Contains call that should return false.
-    System.out.println(config.contains("Core.Server.Blah"));
-
-    //Simple Contains call that should return true.
-    System.out.println(config.contains("Core.Server.Name"));
-
-    //Simple value retrieval
-    System.out.println(config.getString("Core.Server.Name"));
-
-    //Simple boolean retrieval
-    System.out.println(config.getBool("Core.UUID"));
-
-
-    //Simple value setting.
-    LinkedList<String> values = new LinkedList<>();
-    values.add("true");
-    config.getNode("Core.UUID").setValues(values);
-
-    //We now Save our configuration.
-    config.save();
-
-    //Simple call to get keys.
-    System.out.println(config.getSection("Core.Server").getKeys(false));
+    System.out.println(config.isConfigurationSection("Worlds.world.Currencies"));
+    System.out.println(config.getSection("Currencies").getKeys(false));
   }
 }
