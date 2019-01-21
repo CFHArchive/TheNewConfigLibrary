@@ -8,7 +8,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by creatorfromhell.
@@ -103,6 +105,10 @@ public class CommentedConfiguration extends ConfigSection {
    * Loads our configurations, copying over defaults that are not present in our file if needed.
    */
   public void load(boolean copyDefaults) {
+    load(copyDefaults, new ArrayList<>());
+  }
+
+  public void load(boolean copyDefaults, List<String> ignore) {
     Reader load = (file != null)? file : defaults;
     if(load == null) return;
 
@@ -116,7 +122,9 @@ public class CommentedConfiguration extends ConfigSection {
 
       for(YamlNode yamlNode : defaultConfig.getNodeValues()) {
         if(!loaded.contains(yamlNode)) {
-          copied.add(yamlNode);
+          if(!ignored(ignore, yamlNode.getNode())) {
+            copied.add(yamlNode);
+          }
         } else {
           copied.add(loaded.get(loaded.indexOf(yamlNode)));
         }
@@ -128,6 +136,13 @@ public class CommentedConfiguration extends ConfigSection {
     if(realFile != null) {
       save(realFile);
     }
+  }
+
+  private boolean ignored(List<String> ignore, String node) {
+    for(String str : ignore) {
+      if(node.contains(str) || node.equalsIgnoreCase(str)) return true;
+    }
+    return false;
   }
 
   /**
