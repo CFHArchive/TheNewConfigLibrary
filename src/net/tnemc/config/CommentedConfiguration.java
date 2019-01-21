@@ -5,6 +5,9 @@ import com.hellyard.cuttlefish.composer.yaml.YamlComposer;
 import com.hellyard.cuttlefish.grammar.yaml.YamlNode;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.Reader;
 import java.util.LinkedList;
 
 /**
@@ -18,8 +21,9 @@ import java.util.LinkedList;
  */
 public class CommentedConfiguration extends ConfigSection {
 
-  private final File file;
-  private final File defaults;
+  private File realFile = null;
+  private Reader file = null;
+  private Reader defaults = null;
 
   /**
    * Constructor for {@link CommentedConfiguration}.
@@ -27,6 +31,38 @@ public class CommentedConfiguration extends ConfigSection {
    * @param defaults The file that contains our default configurations.
    */
   public CommentedConfiguration(final File file, final File defaults) {
+    super(null);
+    this.realFile = file;
+    try {
+      this.file = new FileReader(file);
+    } catch(FileNotFoundException ignore) { }
+    if(defaults != null) {
+      try {
+        this.defaults = new FileReader(defaults);
+      } catch(FileNotFoundException ignore) { }
+    }
+  }
+
+  /**
+   * Constructor for {@link CommentedConfiguration}.
+   * @param file The file that will be our final configuration file.
+   * @param defaults The file that contains our default configurations.
+   */
+  public CommentedConfiguration(final File file, Reader defaults) {
+    super(null);
+    this.realFile = file;
+    try {
+      this.file = new FileReader(file);
+    } catch(FileNotFoundException ignore) { }
+    this.defaults = defaults;
+  }
+
+  /**
+   * Constructor for {@link CommentedConfiguration}.
+   * @param file The file that will be our final configuration file.
+   * @param defaults The file that contains our default configurations.
+   */
+  public CommentedConfiguration(Reader file, Reader defaults) {
     super(null);
     this.file = file;
     this.defaults = defaults;
@@ -67,7 +103,9 @@ public class CommentedConfiguration extends ConfigSection {
    * Loads our configurations, copying over defaults that are not present in our file if needed.
    */
   public void load(boolean copyDefaults) {
-    final File load = (file.exists())? file : defaults;
+    Reader load = (file != null)? file : defaults;
+    if(load == null) return;
+
     final LinkedList<YamlNode> loaded = (LinkedList<YamlNode>)new CuttlefishBuilder(load, "yaml").build().getNodes();
 
     if(copyDefaults && defaults != null) {
@@ -87,15 +125,9 @@ public class CommentedConfiguration extends ConfigSection {
     } else {
       decodeNodes(loaded);
     }
-    save(file);
-  }
-
-  /**
-   * Used to save our configuration with the file provided in the constructor.
-   * @return True if saved, otherwise false.
-   */
-  public boolean save() {
-    return save(file);
+    if(realFile != null) {
+      save(realFile);
+    }
   }
 
   /**

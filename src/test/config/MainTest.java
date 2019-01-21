@@ -17,8 +17,8 @@ import java.nio.file.Paths;
 public class MainTest {
 
   public static void main(String[] args) {
-    final File defaults = Paths.get("C:\\Users\\Daniel\\Desktop\\Minecraft\\spigot2\\plugins\\TheNewEconomy\\worlds.yml").toFile();
-    final File file = Paths.get("C:\\Users\\Daniel\\Desktop\\Minecraft\\spigot2\\plugins\\TheNewEconomy\\currencytest.yml").toFile();
+    final File defaults = Paths.get("C:\\Users\\Daniel\\Desktop\\Minecraft\\spigot2\\plugins\\TheNewEconomy\\config.yml").toFile();
+    final File file = Paths.get("C:\\Users\\Daniel\\Desktop\\Minecraft\\spigot2\\plugins\\TheNewEconomy\\newconfig.yml").toFile();
 
     //We defined a new CommentedConfiguration instance with our file, and a file of our default configurations.
     CommentedConfiguration config = new CommentedConfiguration(file, defaults);
@@ -27,7 +27,25 @@ public class MainTest {
     config.load();
 
     //Simple Contains call that should return false.
-    System.out.println(config.isConfigurationSection("Worlds.world.Currencies"));
-    System.out.println(config.getSection("Currencies").getKeys(false));
+    System.out.println(config.contains("Core.Server.Blah"));
+
+    //Simple Contains call that should return true.
+    System.out.println(config.contains("Core.Server.Name"));
+
+    //Simple value retrieval
+    System.out.println(config.getString("Core.Server.Name"));
+
+    //Simple boolean retrieval
+    System.out.println(config.getBool("Core.UUID"));
+
+
+    //Simple value setting.
+    config.getNode("Core.UUID").set("true");
+
+    //We now Save our configuration.
+    config.save(file);
+
+    //Simple call to get keys.
+    System.out.println(config.getSection("Core.Server").getKeys(false));
   }
 }
