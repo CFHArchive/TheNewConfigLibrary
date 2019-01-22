@@ -52,11 +52,17 @@ public class CommentedConfiguration extends ConfigSection {
    */
   public CommentedConfiguration(final File file, Reader defaults) {
     super(null);
+
+    //System.out.println("Constructor");
     this.realFile = file;
+    //System.out.println("Constructor1");
     try {
+      //System.out.println("Constructor2");
       this.file = new FileReader(file);
     } catch(FileNotFoundException ignore) { }
+    //System.out.println("Constructor3");
     this.defaults = defaults;
+    //System.out.println("Constructor4");
   }
 
   /**
@@ -74,6 +80,8 @@ public class CommentedConfiguration extends ConfigSection {
    * Loads our configurations, reading the defaults file if needed.
    */
   public void load() {
+
+    //System.out.println("Preparing loader");
     load(true);
   }
 
@@ -105,31 +113,48 @@ public class CommentedConfiguration extends ConfigSection {
    * Loads our configurations, copying over defaults that are not present in our file if needed.
    */
   public void load(boolean copyDefaults) {
+
+    //System.out.println("Preparing loader");
     load(copyDefaults, new ArrayList<>());
   }
 
   public void load(boolean copyDefaults, List<String> ignore) {
-    Reader load = (file != null)? file : defaults;
-    if(load == null) return;
+    Reader load = file;
 
-    final LinkedList<YamlNode> loaded = (LinkedList<YamlNode>)new CuttlefishBuilder(load, "yaml").build().getNodes();
+    //System.out.println("Preparing loader");
+
+    final LinkedList<YamlNode> loaded = (file == null)? new LinkedList<>() : (LinkedList<YamlNode>)new CuttlefishBuilder(load, "yaml").build().getNodes();
+
+    //System.out.println("Loaded");
 
     if(copyDefaults && defaults != null) {
 
-      LinkedList<YamlNode> copied = new LinkedList<>();
-      final CommentedConfiguration defaultConfig = new CommentedConfiguration(defaults, null);
-      defaultConfig.load(false);
+      //System.out.println("file == null?: " + (file == null));
+      //System.out.println("Loaded: " + loaded.size());
 
-      for(YamlNode yamlNode : defaultConfig.getNodeValues()) {
-        if(!loaded.contains(yamlNode)) {
-          if(!ignored(ignore, yamlNode.getNode())) {
-            copied.add(yamlNode);
+      if(file == null || loaded.size() == 0) {
+
+        //System.out.println("wut major");
+        LinkedList<YamlNode> copied = new LinkedList<>();
+        final CommentedConfiguration defaultConfig = new CommentedConfiguration(defaults, null);
+        defaultConfig.load(false);
+        //System.out.println("copied: " + copied.size());
+
+        for(YamlNode yamlNode : defaultConfig.getNodeValues()) {
+          //System.out.println("Node: " + yamlNode.getNode());
+          if(!loaded.contains(yamlNode)) {
+            //System.out.println("wut");
+            if(!ignored(ignore, yamlNode.getNode())) {
+              //System.out.println("wut2");
+              copied.add(yamlNode);
+            }
+          } else {
+            //System.out.println("wut3");
+            copied.add(loaded.get(loaded.indexOf(yamlNode)));
           }
-        } else {
-          copied.add(loaded.get(loaded.indexOf(yamlNode)));
         }
+        decodeNodes(copied);
       }
-      decodeNodes(copied);
     } else {
       decodeNodes(loaded);
     }
