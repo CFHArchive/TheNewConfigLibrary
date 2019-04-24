@@ -1,11 +1,15 @@
 package net.tnemc.config;
 
 import com.hellyard.cuttlefish.grammar.yaml.YamlNode;
+import com.hellyard.cuttlefish.grammar.yaml.YamlValue;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -103,7 +107,24 @@ public class ConfigSection {
   }
 
   public void set(String node, String... values) {
-    getNode(node).set(values);
+    List<YamlValue> valuesList = new LinkedList<>();
+    for(String value : values) {
+      valuesList.add(new YamlValue(new ArrayList<>(), value, "String"));
+    }
+    getNode(node).setValues(valuesList);
+  }
+
+  public void set(String node, YamlValue... values) {
+    getNode(node).setValues(Arrays.asList(values));
+  }
+
+  public void setValue(String node, YamlValue value, int number) {
+    List<YamlValue> values = getNode(node).getValues();
+    if(values.size() < number) {
+      number = values.size();
+    }
+    values.set(number, value);
+    getNode(node).setValues(values);
   }
 
   /**
@@ -192,7 +213,7 @@ public class ConfigSection {
     if(section == null) return def;
 
     try {
-      return Integer.valueOf(section.getBaseNode().getValues().getFirst());
+      return Integer.valueOf(section.getBaseNode().getValues().get(0).getValue());
     } catch(Exception ignore) {
       return def;
     }
@@ -207,7 +228,7 @@ public class ConfigSection {
     if(section == null) return def;
 
     try {
-      return Boolean.valueOf(section.getBaseNode().getValues().getFirst());
+      return Boolean.valueOf(section.getBaseNode().getValues().get(0).getValue());
     } catch(Exception ignore) {
       return def;
     }
@@ -222,7 +243,7 @@ public class ConfigSection {
     if(section == null) return def;
 
     try {
-      return Double.valueOf(section.getBaseNode().getValues().getFirst());
+      return Double.valueOf(section.getBaseNode().getValues().get(0).getValue());
     } catch(Exception ignore) {
       return def;
     }
@@ -237,7 +258,7 @@ public class ConfigSection {
     if(section == null) return def;
 
     try {
-      return Short.valueOf(section.getBaseNode().getValues().getFirst());
+      return Short.valueOf(section.getBaseNode().getValues().get(0).getValue());
     } catch(Exception ignore) {
       return def;
     }
@@ -252,7 +273,7 @@ public class ConfigSection {
     if(section == null) return def;
 
     try {
-      return Float.valueOf(section.getBaseNode().getValues().getFirst());
+      return Float.valueOf(section.getBaseNode().getValues().get(0).getValue());
     } catch(Exception ignore) {
       return def;
     }
@@ -267,7 +288,7 @@ public class ConfigSection {
     if(section == null) return def;
 
     try {
-      return new BigDecimal(section.getBaseNode().getValues().getFirst());
+      return new BigDecimal(section.getBaseNode().getValues().get(0).getValue());
     } catch(Exception ignore) {
       return def;
     }
@@ -281,13 +302,19 @@ public class ConfigSection {
     final ConfigSection section = getSection(node);
     if(section == null) return def;
     
-    return section.getBaseNode().getValues().getFirst();
+    return section.getBaseNode().getValues().get(0).getValue();
   }
 
   public LinkedList<String> getStringList(String node) {
     final ConfigSection section = getSection(node);
     if(section == null) return new LinkedList<>();
+
+    LinkedList<String> stringList = new LinkedList<>();
+
+    for(YamlValue value : section.getBaseNode().getValues()) {
+      stringList.add(value.getValue());
+    }
     
-    return section.getBaseNode().getValues();
+    return stringList;
   }
 }

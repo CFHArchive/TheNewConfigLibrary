@@ -39,9 +39,6 @@ public class MainTest {
     System.out.println(config.getBool("Core.UUID"));
 
 
-    //Simple value setting.
-    config.getNode("Core.UUID").set("true");
-
     //We now Save our configuration.
     config.save(file);
 

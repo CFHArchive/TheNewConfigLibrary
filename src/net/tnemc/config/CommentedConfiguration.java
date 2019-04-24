@@ -154,6 +154,8 @@ public class CommentedConfiguration extends ConfigSection {
           }
         }
         decodeNodes(copied);
+      } else {
+        decodeNodes(loaded);
       }
     } else {
       decodeNodes(loaded);
