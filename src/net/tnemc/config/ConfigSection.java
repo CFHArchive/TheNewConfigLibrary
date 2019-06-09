@@ -81,7 +81,6 @@ public class ConfigSection {
     return getSection(node) != null;
   }
 
-
   /**
    * Returns the {@link ConfigSection section} associated with the specified string node if it exists, otherwise
    * returns null.
@@ -95,6 +94,11 @@ public class ConfigSection {
     ConfigSection section = this;
 
     for(String str : nodeSplit) {
+      final ConfigSection next = section.children.get(str);
+      if(next == null) {
+        final YamlNode base = section.getBaseNode();
+        section.createSection(new ConfigSection(new YamlNode(base, base.getIndentation() + 2, base.getLineNumber() + 1, str + ":", new LinkedList<>(), str, base.getNode() + "." + str)));
+      }
       if(str.equalsIgnoreCase(nodeSplit[nodeSplit.length - 1])) {
         if(section == null) return null;
         return section.children.get(str);
