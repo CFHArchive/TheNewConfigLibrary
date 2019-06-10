@@ -10,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -94,6 +95,23 @@ public class ConfigSection {
     ConfigSection section = this;
 
     for(String str : nodeSplit) {
+      if(str.equalsIgnoreCase(nodeSplit[nodeSplit.length - 1])) {
+        if(section == null) return null;
+        return section.children.get(str);
+      } else {
+        if(section == null) return null;
+        section = section.children.get(str);
+      }
+    }
+    return section;
+  }
+
+  public ConfigSection getSectionOrCreate(String node) {
+    final String[] nodeSplit = node.split("\\.");
+
+    ConfigSection section = this;
+
+    for(String str : nodeSplit) {
       final ConfigSection next = section.children.get(str);
       if(next == null) {
         final YamlNode base = section.getBaseNode();
@@ -108,6 +126,52 @@ public class ConfigSection {
       }
     }
     return section;
+  }
+
+  public ConfigSection getSectionOrCreate(String node, int index) {
+    final String[] nodeSplit = node.split("\\.");
+
+    ConfigSection section = this;
+
+    for(String str : nodeSplit) {
+      final ConfigSection next = section.children.get(str);
+      if(next == null) {
+        final YamlNode base = section.getBaseNode();
+        section.createSection(new ConfigSection(new YamlNode(base, base.getIndentation() + 2, base.getLineNumber() + 1, str + ":", new LinkedList<>(), str, base.getNode() + "." + str)), index);
+      }
+      if(str.equalsIgnoreCase(nodeSplit[nodeSplit.length - 1])) {
+        if(section == null) return null;
+        return section.children.get(str);
+      } else {
+        if(section == null) return null;
+        section = section.children.get(str);
+      }
+    }
+    return section;
+  }
+
+  public void setOrCreate(String node, String... values) {
+    List<YamlValue> valuesList = new LinkedList<>();
+    for(String value : values) {
+      valuesList.add(new YamlValue(new ArrayList<>(), value, "String"));
+    }
+    getSectionOrCreate(node).getBaseNode().setValues(valuesList);
+  }
+
+  public void setOrCreate(String node, YamlValue... values) {
+    getSectionOrCreate(node).getBaseNode().setValues(new LinkedList<>(Arrays.asList(values)));
+  }
+
+  public void setOrCreate(String node, int index, String... values) {
+    List<YamlValue> valuesList = new LinkedList<>();
+    for(String value : values) {
+      valuesList.add(new YamlValue(new ArrayList<>(), value, "String"));
+    }
+    getSectionOrCreate(node, index).getBaseNode().setValues(valuesList);
+  }
+
+  public void setOrCreate(String node, int index, YamlValue... values) {
+    getSectionOrCreate(node, index).getBaseNode().setValues(new LinkedList<>(Arrays.asList(values)));
   }
 
   public void set(String node, String... values) {
@@ -176,12 +240,18 @@ public class ConfigSection {
    * @param section The {@link ConfigSection section} to add.
    */
   public void createSection(ConfigSection section) {
-    final String[] split = section.getBaseNode().getNode().split("\\.");
 
     ConfigSection parent = this;
+    final String[] split = section.getBaseNode().getNode().split("\\.");
+
 
     if(split.length > 1) {
+      String nodeLooped = "";
       for(int i = 0; i < split.length; i++) {
+        if(i > 0) nodeLooped += ".";
+        nodeLooped += split[i];
+
+        if(parent.getBaseNode().getNode().contains(nodeLooped)) continue;
 
         if(i == (split.length - 1)) {
           parent.children.put(split[i], section);
@@ -192,6 +262,50 @@ public class ConfigSection {
     } else {
       children.put(section.getBaseNode().getNode(), section);
     }
+  }
+
+  /**
+   * Adds a new {@link ConfigSection section} under this one at the specific index.
+   * @param section The {@link ConfigSection section} to add.
+   */
+  public void createSection(ConfigSection section, int index) {
+
+    ConfigSection parent = this;
+    final String[] split = section.getBaseNode().getNode().split("\\.");
+
+
+    if(split.length > 1) {
+      String nodeLooped = "";
+      for(int i = 0; i < split.length; i++) {
+        if(i > 0) nodeLooped += ".";
+        nodeLooped += split[i];
+
+        if(parent.getBaseNode().getNode().contains(nodeLooped)) continue;
+
+        if(i == (split.length - 1)) {
+          parent.addChildIndex(index, split[i], section);
+        } else {
+          parent = parent.getSection(split[i]);
+        }
+      }
+    } else {
+      addChildIndex(index, section.getBaseNode().getNode(), section);
+    }
+  }
+
+  public void addChildIndex(int index, String node, ConfigSection section) {
+    LinkedHashMap<String, ConfigSection> newChildren = new LinkedHashMap<>();
+
+    int i = 0;
+    for(Map.Entry<String, ConfigSection> entry : children.entrySet()) {
+      if(i == index) {
+        newChildren.put(node, section);
+      }
+      newChildren.put(entry.getKey(), entry.getValue());
+
+      i++;
+    }
+    children = newChildren;
   }
 
   /**
