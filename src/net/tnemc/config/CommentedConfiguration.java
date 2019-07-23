@@ -33,6 +33,16 @@ public class CommentedConfiguration extends ConfigSection {
    * @param defaults The file that contains our default configurations.
    */
   public CommentedConfiguration(final File file, final File defaults) {
+    this(file, defaults, false);
+  }
+
+  /**
+   * Constructor for {@link CommentedConfiguration}.
+   * @param file The file that will be our final configuration file.
+   * @param defaults The file that contains our default configurations.
+   * @param debug Whether or not to enter debug mode.
+   */
+  public CommentedConfiguration(final File file, final File defaults, boolean debug) {
     super(null);
     this.realFile = file;
     try {
@@ -43,6 +53,8 @@ public class CommentedConfiguration extends ConfigSection {
         this.defaults = new FileReader(defaults);
       } catch(FileNotFoundException ignore) { }
     }
+
+    this.debug = debug;
   }
 
   /**
@@ -51,6 +63,16 @@ public class CommentedConfiguration extends ConfigSection {
    * @param defaults The file that contains our default configurations.
    */
   public CommentedConfiguration(final File file, Reader defaults) {
+    this(file, defaults, false);
+  }
+
+  /**
+   * Constructor for {@link CommentedConfiguration}.
+   * @param file The file that will be our final configuration file.
+   * @param defaults The file that contains our default configurations.
+   * @param debug Whether or not to enter debug mode.
+   */
+  public CommentedConfiguration(final File file, Reader defaults, boolean debug) {
     super(null);
 
     //System.out.println("Constructor");
@@ -63,6 +85,7 @@ public class CommentedConfiguration extends ConfigSection {
     //System.out.println("Constructor3");
     this.defaults = defaults;
     //System.out.println("Constructor4");
+    this.debug = debug;
   }
 
   /**
@@ -71,9 +94,20 @@ public class CommentedConfiguration extends ConfigSection {
    * @param defaults The file that contains our default configurations.
    */
   public CommentedConfiguration(Reader file, Reader defaults) {
+    this(file, defaults, false);
+  }
+
+  /**
+   * Constructor for {@link CommentedConfiguration}.
+   * @param file The file that will be our final configuration file.
+   * @param defaults The file that contains our default configurations.
+   * @param debug Whether or not to enter debug mode.
+   */
+  public CommentedConfiguration(Reader file, Reader defaults, boolean debug) {
     super(null);
     this.file = file;
     this.defaults = defaults;
+    this.debug = debug;
   }
 
   /**

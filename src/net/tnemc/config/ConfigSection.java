@@ -26,6 +26,8 @@ public class ConfigSection {
 
   private YamlNode baseNode;
 
+  protected boolean debug = false;
+
   protected LinkedHashMap<String, ConfigSection> children = new LinkedHashMap<>();
 
   /**
@@ -59,6 +61,35 @@ public class ConfigSection {
    * @return A String Set of the child nodes.
    */
   public Set<String> getKeys(boolean deep) {
+    LinkedHashSet<String> keys = new LinkedHashSet<>();
+
+    for(YamlNode node : getNodeValues()) {
+      String keyStr = (baseNode == null)? node.getNode() : node.getNode().replace(baseNode.getNode() + ".", "");
+
+      if(!deep) {
+        keyStr = keyStr.split("\\.")[0];
+      }
+
+      if(!keys.contains(keyStr)) keys.add(keyStr);
+    }
+    return keys;
+  }
+
+  /**
+   * Used to get the child {@link ConfigSection sections} of this {@link ConfigSection}, which are
+   * only 1 level deep in indentation from this {@link ConfigSection} in the order they are in the config file.
+   * @return A String LinkedHashSet of the child nodes.
+   */
+  public LinkedHashSet<String> getKeysLinked() {
+    return getKeysLinked(false);
+  }
+
+
+  /**
+   * Used to get the child {@link ConfigSection sections} of this {@link ConfigSection} in the order they are in the config file.
+   * @return A String LinkedHashSet of the child nodes.
+   */
+  public LinkedHashSet<String> getKeysLinked(boolean deep) {
     LinkedHashSet<String> keys = new LinkedHashSet<>();
 
     for(YamlNode node : getNodeValues()) {
@@ -137,7 +168,11 @@ public class ConfigSection {
       final ConfigSection next = section.children.get(str);
       if(next == null) {
         final YamlNode base = section.getBaseNode();
-        section.createSection(new ConfigSection(new YamlNode(base, base.getIndentation() + 2, base.getLineNumber() + 1, str + ":", new LinkedList<>(), str, base.getNode() + "." + str)), index);
+        int indentation = base.getIndentation() + 2;
+        if(section.children.size() > 0) {
+          indentation = section.children.values().iterator().next().getBaseNode().getIndentation();
+        }
+        section.createSection(new ConfigSection(new YamlNode(base, indentation, base.getLineNumber() + 1, str + ":", new LinkedList<>(), str, base.getNode() + "." + str)), index);
       }
       if(str.equalsIgnoreCase(nodeSplit[nodeSplit.length - 1])) {
         if(section == null) return null;
@@ -419,6 +454,8 @@ public class ConfigSection {
   public String getString(String node, String def) {
     final ConfigSection section = getSection(node);
     if(section == null) return def;
+
+    debug("Value: " + section.getBaseNode().getValues().get(0).getValue());
     
     return section.getBaseNode().getValues().get(0).getValue();
   }
@@ -434,5 +471,9 @@ public class ConfigSection {
     }
     
     return stringList;
+  }
+
+  private void debug(String message) {
+    if(debug) System.out.println(message);
   }
 }
