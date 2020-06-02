@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.tnemc</groupId>
     <artifactId>TheNewConfigLibrary</artifactId>
-    <version>0.1.1.45</version>
+    <version>0.1.1.61</version>
     <packaging>jar</packaging>
     <name>TheNewConfigLibrary</name>
     <properties>
@@ -53,7 +53,7 @@
         <dependency>
             <groupId>com.hellyard</groupId>
             <artifactId>Cuttlefish</artifactId>
-            <version>0.0.1.21</version>
+            <version>0.0.1.30</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
@@ -74,10 +74,13 @@
     </developers>
 
     <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
         <repository>
-            <id>bintray-theneweconomy-java</id>
-            <name>theneweconomy-java</name>
-            <url>https://api.bintray.com/maven/theneweconomy/java/TheNewConfigLibrary/;publish=1</url>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
 </project>

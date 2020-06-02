@@ -5,9 +5,12 @@ import com.hellyard.cuttlefish.composer.yaml.YamlComposer;
 import com.hellyard.cuttlefish.grammar.yaml.YamlNode;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -46,7 +49,7 @@ public class CommentedConfiguration extends ConfigSection {
     super(null);
     this.realFile = file;
     try {
-      this.file = new FileReader(file);
+      this.file = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
     } catch(FileNotFoundException ignore) { }
     if(defaults != null) {
       try {
@@ -80,7 +83,7 @@ public class CommentedConfiguration extends ConfigSection {
     //System.out.println("Constructor1");
     try {
       //System.out.println("Constructor2");
-      this.file = new FileReader(file);
+      this.file = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
     } catch(FileNotFoundException ignore) { }
     //System.out.println("Constructor3");
     this.defaults = defaults;
