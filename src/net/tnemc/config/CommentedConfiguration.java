@@ -113,6 +113,10 @@ public class CommentedConfiguration extends ConfigSection {
     this.debug = debug;
   }
 
+  public File getRealFile() {
+    return realFile;
+  }
+
   /**
    * Loads our configurations, reading the defaults file if needed.
    */
@@ -175,10 +179,10 @@ public class CommentedConfiguration extends ConfigSection {
         LinkedList<YamlNode> copied = new LinkedList<>();
         final CommentedConfiguration defaultConfig = new CommentedConfiguration(defaults, null);
         defaultConfig.load(false);
-        //System.out.println("copied: " + copied.size());
+        System.out.println("copied: " + copied.size());
 
         for(YamlNode yamlNode : defaultConfig.getNodeValues()) {
-          //System.out.println("Node: " + yamlNode.getNode());
+          System.out.println("Node: " + yamlNode.getNode());
           if(!loaded.contains(yamlNode)) {
             //System.out.println("wut");
             if(!ignored(ignore, yamlNode.getNode())) {
@@ -192,9 +196,11 @@ public class CommentedConfiguration extends ConfigSection {
         }
         decodeNodes(copied);
       } else {
+        System.out.println("loaded: ");
         decodeNodes(loaded);
       }
     } else {
+      System.out.println("loaded: ");
       decodeNodes(loaded);
     }
     if(realFile != null) {
